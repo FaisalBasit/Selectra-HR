@@ -1,0 +1,30 @@
+# Node.js
+node_modules/
+package-lock.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files
+.env*.local
+.env
+
+# Build files
+.next/
+out/
+dist/
+
+# Cache
+.cache/
+
+# IDE
+.idea/
+.vscode/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Debug logs
+*.log
+logs/
