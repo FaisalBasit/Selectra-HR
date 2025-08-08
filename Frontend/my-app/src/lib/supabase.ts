@@ -8,3 +8,13 @@ if (!supabaseUrl || !supabaseKey) {
 }
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
+
+// Check if user is authenticated
+export const checkAuth = async () => {
+  const { data: { session }, error } = await supabase.auth.getSession();
+  if (error) {
+    console.error('Error checking auth:', error);
+    throw error;
+  }
+  return session;
+};

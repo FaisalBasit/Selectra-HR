@@ -16,7 +16,7 @@ export default function JobTable({ jobs, onEdit, onDelete }: JobTableProps) {
         <table className="min-w-full bg-white text-sm text-left">
           <thead className="bg-gray-100 text-xs uppercase">
             <tr>
-              <th className="p-4 whitespace-nowrap">Job ID</th>
+              <th className="p-4 whitespace-nowrap">#</th>
               <th className="p-4 whitespace-nowrap">Title</th>
               <th className="p-4 whitespace-nowrap">Department</th>
               <th className="p-4 whitespace-nowrap">Location</th>
@@ -30,9 +30,9 @@ export default function JobTable({ jobs, onEdit, onDelete }: JobTableProps) {
             </tr>
           </thead>
           <tbody>
-            {jobs.map((job) => (
+            {jobs.map((job, index) => (
               <tr key={job.id} className="border-t hover:bg-gray-50">
-                <td className="p-4 whitespace-nowrap font-mono text-xs">{job.id}</td>
+                <td className="p-4 whitespace-nowrap font-mono text-xs">{index + 1}</td>
                 <td className="p-4 whitespace-nowrap">{job.title}</td>
                 <td className="p-4 whitespace-nowrap">{job.department}</td>
                 <td className="p-4 whitespace-nowrap">{job.location}</td>

@@ -23,7 +23,7 @@ interface JobFormProps {
 const defaultOptions = {
   jobTitles: ["Software Engineer", "Product Manager", "Data Scientist"],
   departments: ["Engineering", "Product", "Marketing", "Sales", "HR"],
-  qualifications: ["Bachelor's Degree", "Master's Degree", "PhD"],
+  qualifications: ["Bachelor of Computer Science (BSCS)", "Bachelor of Software Engineering (BSSE)", "Bachelor of Artificial Intelligence (BSAI)", "Bachelor of Marketing (BSM)","Master of Business Administration (MBA)"],
   schedules: ["Full-time", "Part-time", "Flexible"],
   managers: ["John Doe", "Jane Smith", "Mike Johnson"],
   experienceLevels: ["Entry Level", "1-3 years", "3-5 years", "5+ years", "10+ years"],
@@ -164,7 +164,7 @@ export default function JobForm({ editingJob, onCreate, onUpdate, onClear }: Job
         status: "Active"
       };
 
-      // Submit form
+      // Replace these lines
       if (editingJob) {
         await onUpdate({ ...editingJob, ...formattedData });
       } else {
@@ -172,25 +172,7 @@ export default function JobForm({ editingJob, onCreate, onUpdate, onClear }: Job
       }
 
       // Reset form after successful submission
-      setForm({
-        title: "",
-        description: "",
-        department: "",
-        qualifications: "",
-        experience: "",
-        salaryFrom: 0,
-        salaryTo: 0,
-        jobType: "",
-        schedule: "",
-        location: "",
-        reportingManager: "",
-        skills: [],
-        startDate: "",
-        endDate: "",
-        urgency: "",
-        preferences: "",
-        status: "Active"
-      });
+      resetForm();
 
       // Clear editing state
       onClear();
@@ -205,6 +187,27 @@ export default function JobForm({ editingJob, onCreate, onUpdate, onClear }: Job
     }
   };
 
+  const resetForm = () => {
+    setForm({
+      title: "",
+      description: "",
+      department: "",
+      qualifications: "",
+      experience: "",
+      salaryFrom: 0,
+      salaryTo: 0,
+      jobType: "",
+      schedule: "",
+      location: "",
+      reportingManager: "",
+      skills: [],
+      startDate: "",
+      endDate: "",
+      urgency: "",
+      preferences: "",
+      status: "Active"
+    });
+  };
 
   return (
     <Card className="w-full max-w-5xl mx-auto my-10 shadow-md rounded-2xl">
@@ -388,12 +391,28 @@ export default function JobForm({ editingJob, onCreate, onUpdate, onClear }: Job
           {/* Qualifications */}
           <div>
             <Label>Qualifications *</Label>
-            <Textarea
-              name="qualifications"
-              value={form.qualifications}
-              onChange={handleChange}
-              className="min-h-[100px]"
-              required
+            <CreatableSelect
+              isClearable
+              isMulti
+              onChange={(selected) => {
+                const values = selected ? selected.map(option => option.value) : [];
+                setForm(prev => ({
+                  ...prev,
+                  qualifications: values.join('\n')
+                }));
+              }}
+              options={defaultOptions.qualifications.map(qual => ({ 
+                value: qual, 
+                label: qual 
+              }))}
+              value={form.qualifications.split('\n')
+                .filter(qual => qual.trim())
+                .map(qual => ({
+                  value: qual.trim(),
+                  label: qual.trim()
+                }))}
+              placeholder="Select or create qualifications..."
+              classNamePrefix="select"
             />
           </div>
 
@@ -412,7 +431,10 @@ export default function JobForm({ editingJob, onCreate, onUpdate, onClear }: Job
           <div className="flex gap-4 justify-end pt-6">
             <Button 
               type="button" 
-              onClick={onClear}
+              onClick={() => {
+                resetForm();
+                onClear();
+              }}
               variant="outline"
             >
               Cancel

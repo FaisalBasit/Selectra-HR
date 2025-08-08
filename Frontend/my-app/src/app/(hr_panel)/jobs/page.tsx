@@ -11,29 +11,39 @@ export default function JobPostingPage() {
   const [editingJob, setEditingJob] = useState<Job | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    loadJobs();
-  }, []);
-
-  const loadJobs = async () => {
+  // Add refresh function
+  const refreshJobs = async () => {
+    setIsLoading(true);
     try {
       const data = await fetchJobs();
       setJobs(data);
     } catch (error) {
-      console.error('Error loading jobs:', error);
-      alert('Failed to load jobs. Please refresh the page.');
+      console.error('Error refreshing jobs:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  // Use refreshJobs in useEffect
+  useEffect(() => {
+    refreshJobs();
+  }, []);
 
   const handleCreate = async (job: Omit<Job, "id" | "created_at">) => {
     try {
       setIsLoading(true);
+      console.log('Attempting to create job:', job);
       const newJob = await createJob(job);
-      setJobs(prev => [newJob, ...prev]);
+      console.log('Job created successfully:', newJob);
+      await refreshJobs();
       alert('Job created successfully!');
     } catch (error) {
-      console.error('Error creating job:', error);
-      alert('Failed to create job. Please try again.');
+      console.error('Detailed error creating job:', error);
+      if (error instanceof Error) {
+        alert(`Failed to create job: ${error.message}`);
+      } else {
+        alert('Failed to create job. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -42,8 +52,8 @@ export default function JobPostingPage() {
   const handleUpdate = async (job: Job) => {
     try {
       setIsLoading(true);
-      const updated = await updateJob(job.id, job);
-      setJobs(prev => prev.map(j => (j.id === job.id ? updated : j)));
+      await updateJob(job.id, job);
+      await refreshJobs(); // Refresh the jobs list after updating
       setEditingJob(null);
       alert('Job updated successfully!');
     } catch (error) {
@@ -58,7 +68,7 @@ export default function JobPostingPage() {
     try {
       setIsLoading(true);
       await deleteJob(id);
-      setJobs(prev => prev.filter(j => j.id !== id));
+      await refreshJobs(); // Refresh the jobs list after deleting
       setEditingJob(null);
       alert('Job deleted successfully!');
     } catch (error) {
@@ -70,7 +80,7 @@ export default function JobPostingPage() {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-3 space-y-6">
       <JobForm
         editingJob={editingJob}
         onCreate={handleCreate}
